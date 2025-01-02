@@ -4,14 +4,8 @@
   "description": "ReferMe is an innovative startup dedicated to revolutionizing the affiliate marketing space. Our platform empowers affiliates to streamline their operations by offering a centralized hub to manage and monitor their referral links.",
   "main": "./src/index.js",
   "scripts": {
-<<<<<<< HEAD
     "start": "nodemon ./src/index.js",
     "test": "first "
-=======
-    "start": "node ./src/index.js",
-    "test": "first ",
-    "dev": "nodemon ./src/index.js"
->>>>>>> c597f2370519a47d08b77d65edb9d4eb5adc2043
   },
   "author": "",
   "license": "ISC",
@@ -20,15 +14,9 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },
-<<<<<<< HEAD
   "type": "commonjs",
   "devDependencies": {
     "nodemon": "^3.1.9",
     "prisma": "^6.1.0"
-=======
-  "type": "module",
-  "devDependencies": {
-    "nodemon": "^3.1.9"
->>>>>>> c597f2370519a47d08b77d65edb9d4eb5adc2043
   }
 }
