@@ -1,13 +1,43 @@
-import express from "express";
+const express = require("express");
+const usersRoutes = require('./routes/users');
+const dotenv = require("dotenv");
+const { PrismaClient } = require("@prisma/client");
 
+const prisma = new PrismaClient();
 const app = express();
-const port = 3000;
+
+dotenv.config();
+
+//const minddlewareLogRequest = require('./middleware/logs');
+
+// app.use(minddlewareLogRequest);
+app.use(express.json());
+
+app.use("/users", usersRoutes);
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+  console.log("Express API running in port:  " + PORT);
+});
 
 app.get("/", (req, res) => {
-  res.send("Hello Word!");
+    res.send("welcome");
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.get("/role")
+
+
+
+
+
+
+
+
+
+
+app.post("/", (req, res) => {
+    res.send("hello POST methode ");
 });
+
 
