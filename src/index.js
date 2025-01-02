@@ -21,23 +21,8 @@ app.listen(PORT, () => {
   console.log("Express API running in port:  " + PORT);
 });
 
-app.get("/", (req, res) => {
-    res.send("welcome");
-});
-
-app.get("/role")
 
 
 
-
-
-
-
-
-
-
-app.post("/", (req, res) => {
-    res.send("hello POST methode ");
-});
 
 
