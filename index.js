@@ -1,5 +1,5 @@
 const express = require("express");
-const usersRoutes = require('./routes/users');
+const usersRoutes = require('./src/routes/users');
 const dotenv = require("dotenv");
 const { PrismaClient } = require("@prisma/client");
 
@@ -20,9 +20,5 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log("Express API running in port:  " + PORT);
 });
-
-
-
-
 
 
