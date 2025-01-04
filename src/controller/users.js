@@ -22,7 +22,7 @@ const createNewUser = async (req, res) => {
     body('username').isString().notEmpty().withMessage('Username is required'),
     body('email').isEmail().withMessage('Invalid email format').notEmpty().withMessage('Email is required'),
     body('phone_number').isString().notEmpty().withMessage('Phone number is required'),
-    body('password').isStrongPassword().withMessage('Your password is not Strong enough, Use characters !@#$%^&*(* to get strong password').notEmpty().withMessage('Password is required').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+    body('password').isStrongPassword().withMessage('Your password is not Strong enough, Use characters !@#$%^&*() to get strong password').notEmpty().withMessage('Password is required').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
   ];
 
   await Promise.all(userValidation.map(validation => validation.run(req)));
@@ -47,7 +47,6 @@ const createNewUser = async (req, res) => {
 
     res.status(201).json(newUser);
   } catch (error) {
-    console.error('Error creating user:', error);
     res.status(500).json({ error: 'Failed to create user' });
   }
 };
