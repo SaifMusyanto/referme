@@ -20,47 +20,47 @@ model Role {
 }
 
 model User {
-  user_id      Int      @id @default(autoincrement())
-  username     String   @db.VarChar(50)
-  email        String   @unique @db.VarChar(100)
-  phone_number String?  @db.VarChar(15)
-  password     String   @db.VarChar(255)
-  role_id      Int
-  created_at   DateTime @default(now()) 
-  role         Role     @relation(fields: [role_id], references: [role_id])
+  user_id      Int           @id @default(autoincrement())
+  username     String        @db.VarChar(50)
+  email        String        @unique @db.VarChar(100)
+  phone_number String?       @db.VarChar(15)
+  password     String        @db.VarChar(255)
+  role_id      Int           @default(2)
+  created_at   DateTime      @default(now())
+  role         Role          @relation(fields: [role_id], references: [role_id])
   merchant     Merchant?
   transaction  Transaction[]
 }
 
 model Badge {
-  badge_id   Int      @id @default(autoincrement())
-  badge_name String   @db.VarChar(50)
+  badge_id   Int        @id @default(autoincrement())
+  badge_name String     @db.VarChar(50)
   merchants  Merchant[]
 }
 
 model Merchant {
-  merchant_id      Int      @id @default(autoincrement())
-  user_id          Int      @unique
-  merchant_name    String   @unique @db.VarChar(100)
-  badge_id         Int?
-  deskripsi_merchant String? @db.Text
-  profil_image     String?  @db.VarChar(255)
-  banner_image     String?  @db.VarChar(255)
-  current_product_total Int  @default(0)
-  max_product      Int      @default(50)
-  created_at       DateTime @default(now()) 
-  user             User     @relation(fields: [user_id], references: [user_id])
-  badge            Badge?   @relation(fields: [badge_id], references: [badge_id])
-  categories       Category[]
-  products         Product[]
+  merchant_id           Int        @id @default(autoincrement())
+  user_id               Int        @unique
+  merchant_name         String     @unique @db.VarChar(100)
+  badge_id              Int?
+  deskripsi_merchant    String?    @db.Text
+  profil_image          String?    @db.VarChar(255)
+  banner_image          String?    @db.VarChar(255)
+  current_product_total Int        @default(0)
+  max_product           Int        @default(50)
+  created_at            DateTime   @default(now())
+  user                  User       @relation(fields: [user_id], references: [user_id])
+  badge                 Badge?     @relation(fields: [badge_id], references: [badge_id])
+  categories            Category[]
+  products              Product[]
 }
 
 model Category {
-  category_id   Int      @id @default(autoincrement())
-  merchant_id   Int
-  category_name String   @db.VarChar(100)
-  category_image String? @db.VarChar(255)
-  merchant      Merchant @relation(fields: [merchant_id], references: [merchant_id])
+  category_id    Int      @id @default(autoincrement())
+  merchant_id    Int
+  category_name  String   @db.VarChar(100)
+  category_image String?  @db.VarChar(255)
+  merchant       Merchant @relation(fields: [merchant_id], references: [merchant_id])
 }
 
 model Product {
@@ -72,22 +72,21 @@ model Product {
 }
 
 model Pricelist {
-  pricelist_id Int      @id @default(autoincrement())
+  pricelist_id Int           @id @default(autoincrement())
   quota        Int
-  price        Decimal  @db.Decimal(10, 2)
+  price        Decimal       @db.Decimal(10, 2)
   transactions Transaction[]
 }
 
-
 model Transaction {
-  detail_id    Int      @id @default(autoincrement())
-  user_id      Int
-  pricelist_id Int
+  detail_id      Int       @id @default(autoincrement())
+  user_id        Int
+  pricelist_id   Int
   payment_method Int
-  status       Status   
-  total_price  Decimal  @db.Decimal(10, 2)
-  user         User     @relation(fields: [user_id], references: [user_id])
-  pricelist    Pricelist @relation(fields: [pricelist_id], references: [pricelist_id])
+  status         Status
+  total_price    Decimal   @db.Decimal(10, 2)
+  user           User      @relation(fields: [user_id], references: [user_id])
+  pricelist      Pricelist @relation(fields: [pricelist_id], references: [pricelist_id])
 }
 
 enum Status {
@@ -95,4 +94,3 @@ enum Status {
   processed
   completed
 }
-

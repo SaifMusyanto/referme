@@ -13,7 +13,7 @@ CREATE TABLE `User` (
     `email` VARCHAR(100) NOT NULL,
     `phone_number` VARCHAR(15) NULL,
     `password` VARCHAR(255) NOT NULL,
-    `role_id` INTEGER NOT NULL,
+    `role_id` INTEGER NOT NULL DEFAULT 2,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `User_email_key`(`email`),

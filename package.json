@@ -5,7 +5,8 @@
   "main": "./src/index.js",
   "scripts": {
     "start": "nodemon ./src/index.js",
-    "test": "first "
+    "test": "first ",
+    "seed": "node prisma/seed.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +16,9 @@
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "math-intrinsics": "^1.1.0"
   },
   "type": "commonjs",
   "devDependencies": {
