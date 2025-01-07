@@ -14,6 +14,19 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// untuk mendapatkan user berdasarkan ID
+const getUser = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { user_id: parseInt(req.params.idUser) }}); 
+    console.log("Success fetch requested user");
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+};
+
 const updateUser = async (req, res) => {
   const { username, phone_number } = req.body;
 
@@ -68,6 +81,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  getUser,
   updateUser,
   deleteUser,
 };
