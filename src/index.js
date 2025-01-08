@@ -1,11 +1,9 @@
 const express = require("express");
 const usersRoutes = require("./routes/users");
 const dotenv = require("dotenv");
-const { PrismaClient } = require("@prisma/client");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 const { authenticateToken } = require("./middleware/authMiddleware");
-const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT;
 

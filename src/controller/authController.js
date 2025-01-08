@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { generateToken } = require("../utils/jwtUtils.js");
 const SECRET_KEY = process.env.SECRET_KEY || "your_jwt_secret_key";
 
 const register = async (req, res) => {
@@ -61,7 +60,7 @@ const register = async (req, res) => {
       },
     });
 
-    const token = generateToken({ email }, SECRET_KEY);
+    const token = jwt.sign({ id: newUser.user_id, email: newUser.email }, SECRET_KEY, { expiresIn: '1h' });
 
     res.status(201).json({ token });
   } catch (err) {
@@ -73,15 +72,18 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({
-    where: { email: email }, // Menentukan kondisi pencarian
-  });
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    const token = generateToken({ email }, SECRET_KEY);
-    res.json({ token });
-  } else {
-    res.status(401).send("Invalid credentials");
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ id: user.user_id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+      res.json({ token });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
