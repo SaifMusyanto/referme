@@ -3,25 +3,27 @@ const prisma = new PrismaClient();
 const joi = require("joi");
 const { buildResponse } = require("../utils/response_util");
 const { param } = require("../routes/badges");
+const { parse } = require("dotenv");
 
 const create = async (req, res) => {
   const schemaProduct = joi.object({
-    product_name: joi.string().min(3).required().messages({
-      "string empty": "product name is required",
-      "string min": "product name must be at least {#limit} characters long",
+    category_id: joi.number().integer().positive().required().messages({
+      "number.base": "category ID must be a number",
+      "number.integer": "category ID must be an integer",
+      "number.positive": "category ID must be a positive number",
+      "any.required": "category ID is required",
     }),
-    link_referral: joi.string().min(3).required().messages({
-      "string empty": "link referral is required",
-      "string min": "link referral must be at least {#limit} characters long",
+    product_name: joi.string().trim().min(3).max(100).required().messages({
+      "string.empty": "Product name is required",
+      "string.min": "Product name must be at least {#limit} characters long",
+      "string.max": "Product name cannot be longer than {#limit} characters",
     }),
-    merchant_id: joi.number().integer().positive().required().messages({
-      "number.base": "Merchant ID must be a number",
-      "number.integer": "Merchant ID must be an integer",
-      "number.positive": "Merchant ID must be a positive number",
-      "any.required": "Merchant ID is required",
+    link_referral: joi.string().trim().uri().required().messages({
+      "string.empty": "Link referral is required",
+      "string.uri": "Link referral must be a valid URL",
     }),
   });
-  console.log(req.body);
+
   const { error } = schemaProduct.validate(req.body);
   if (error) {
     return res
@@ -30,21 +32,21 @@ const create = async (req, res) => {
   }
 
   try {
-    const { product_name, link_referral, merchant_id } = req.body;
-    const merchantExist = await prisma.merchant.findUnique({
-      where: { merchant_id: merchant_id },
+    const { product_name, link_referral, category_id } = req.body;
+    const categoryExist = await prisma.category.findUnique({
+      where: { category_id: category_id },
     });
 
-    if (!merchantExist) {
+    if (!categoryExist) {
       return res
         .status(404)
-        .json(buildResponse(false, "merchant_id not found", null));
+        .json(buildResponse(false, "category_id not found", null));
     }
     const savedProduct = await prisma.product.create({
       data: {
         product_name: product_name,
         link_referral: link_referral,
-        merchant_id: merchant_id,
+        category_id: category_id,
       },
     });
 
@@ -56,9 +58,13 @@ const create = async (req, res) => {
   }
 };
 
-const getAll = async (req, res) => {
+const getAllByCategory = async (req, res) => {
   try {
+    const category_id = parseInt(req.params.category_id);
     const products = await prisma.product.findMany({
+      where: {
+        category_id: category_id,
+      },
       select: {
         product_id: true,
         product_name: true,
@@ -77,9 +83,7 @@ const getAll = async (req, res) => {
       .status(200)
       .json(buildResponse(true, "Successfully display all product", products));
   } catch (error) {
-    return res
-      .status(400)
-      .json(buildResponse(false, "failed display product", null));
+    return res.status(400).json(buildResponse(false, error.message, null));
   }
 };
 
@@ -201,7 +205,7 @@ const remove = async (req, res) => {
 module.exports = {
   create,
   update,
-  getAll,
+  getAllByCategory,
   getById,
-  remove
+  remove,
 };

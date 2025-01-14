@@ -52,7 +52,6 @@ model Merchant {
   user                  User       @relation(fields: [user_id], references: [user_id])
   badge                 Badge?     @relation(fields: [badge_id], references: [badge_id])
   categories            Category[]
-  products              Product[]
 }
 
 model Category {
@@ -61,14 +60,15 @@ model Category {
   category_name  String   @db.VarChar(100)
   category_image String?  @db.VarChar(255)
   merchant       Merchant @relation(fields: [merchant_id], references: [merchant_id])
+  products       Product[]
 }
 
 model Product {
   product_id    Int      @id @default(autoincrement())
-  merchant_id   Int
+  category_id   Int
   product_name  String   @db.VarChar(100)
   link_referral String   @db.VarChar(255)
-  merchant      Merchant @relation(fields: [merchant_id], references: [merchant_id])
+  category      Category @relation(fields: [category_id], references: [category_id], map: "Product_category_id_fkey")
 }
 
 model Pricelist {

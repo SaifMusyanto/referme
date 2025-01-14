@@ -14,7 +14,7 @@ async function main() {
   console.log("Seeding Users...");
   const hashedPasswordAdmin = await bcrypt.hash("@admin123", 10); // 10 adalah salt rounds
   const hashedPasswordAfiliator = await bcrypt.hash("@Afiliator123", 10); // 10 adalah salt rounds
-  
+
   await prisma.user.createMany({
     data: [
       {
@@ -39,13 +39,12 @@ async function main() {
   const afiliatorUser = await prisma.user.findFirst({
     where: { role_id: 2 },
   });
-  
+
   if (!afiliatorUser) {
     console.error("No afiliator user found!");
     return;
   }
-  
-  
+
   console.log("Seeding Badges...");
   await prisma.badge.createMany({
     data: [
@@ -54,9 +53,9 @@ async function main() {
       { badge_name: "Bronze Merchant" },
     ],
   });
-  
+
   console.log("Badges data created!");
-  
+
   const defaultBadge = await prisma.badge.findFirst({
     where: { badge_id: 1 },
   });
@@ -70,13 +69,56 @@ async function main() {
       merchant_name: "Fashion Store",
       badge_id: defaultBadge.badge_id,
       deskripsi_merchant: "fashion stylish, harga ekonomis",
-      profil_image: "https://png.pngtree.com/template/20200609/ourlarge/pngtree-modern-suits-logo-vector-with-elegant-circle-clean-line-image_380765.jpg",
-      banner_image: "https://1.bp.blogspot.com/-e4hIYGgeAX0/XEJmaq2BA6I/AAAAAAAARqQ/CABsKIWczYocHwYGymnYqqyfPUM3mIv9wCLcBGAs/s1600/Dannis%2BCollection.png",
+      profil_image:
+        "https://png.pngtree.com/template/20200609/ourlarge/pngtree-modern-suits-logo-vector-with-elegant-circle-clean-line-image_380765.jpg",
+      banner_image:
+        "https://1.bp.blogspot.com/-e4hIYGgeAX0/XEJmaq2BA6I/AAAAAAAARqQ/CABsKIWczYocHwYGymnYqqyfPUM3mIv9wCLcBGAs/s1600/Dannis%2BCollection.png",
       current_product_total: 10,
       max_product: 50,
     },
   });
   console.log("Merchants data created!");
+
+  // Get merchant
+  const createdMerchant = await prisma.merchant.findFirst({
+    where: { merchant_name: "Fashion Store" },
+  });
+
+  if (!createdMerchant) {
+    console.error("Merchant not found!");
+    return;
+  }
+
+  console.log("Seeding Category...");
+  await prisma.category.create({
+    data: {
+      merchant_id: createdMerchant.merchant_id,
+      category_name: "Sweater",
+      category_image:
+        "https://static.vecteezy.com/system/resources/previews/025/765/551/original/cute-knitted-sweater-hand-drawn-flat-cartoon-isolated-illustration-cozy-pullover-jersey-warm-clothes-vector.jpg",
+    },
+  });
+
+  console.log("Category data created!");
+
+  const createdCategory = await prisma.category.findFirst({
+    where: { category_name: "Sweater" },
+  });
+
+  if (!createdCategory) {
+    console.error("Category not found!");
+    return;
+  }
+
+  console.log("Seeding Product...");
+  await prisma.product.create({
+    data: {
+      category_id: createdCategory.category_id,
+      product_name: "Polo Sport Sweatshirt",
+      link_referral: "https://tokopedia.link/Fu2v4foa4Pb",
+    },
+  });
+  console.log("Product data created");
 }
 
 main()
