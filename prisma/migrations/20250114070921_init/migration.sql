@@ -40,9 +40,11 @@ CREATE TABLE `Merchant` (
     `current_product_total` INTEGER NOT NULL DEFAULT 0,
     `max_product` INTEGER NOT NULL DEFAULT 50,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `slug` VARCHAR(100) NULL,
 
     UNIQUE INDEX `Merchant_user_id_key`(`user_id`),
     UNIQUE INDEX `Merchant_merchant_name_key`(`merchant_name`),
+    UNIQUE INDEX `Merchant_slug_key`(`slug`),
     PRIMARY KEY (`merchant_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -59,7 +61,7 @@ CREATE TABLE `Category` (
 -- CreateTable
 CREATE TABLE `Product` (
     `product_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `merchant_id` INTEGER NOT NULL,
+    `category_id` INTEGER NOT NULL,
     `product_name` VARCHAR(100) NOT NULL,
     `link_referral` VARCHAR(255) NOT NULL,
 
@@ -100,7 +102,7 @@ ALTER TABLE `Merchant` ADD CONSTRAINT `Merchant_badge_id_fkey` FOREIGN KEY (`bad
 ALTER TABLE `Category` ADD CONSTRAINT `Category_merchant_id_fkey` FOREIGN KEY (`merchant_id`) REFERENCES `Merchant`(`merchant_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Product` ADD CONSTRAINT `Product_merchant_id_fkey` FOREIGN KEY (`merchant_id`) REFERENCES `Merchant`(`merchant_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Product` ADD CONSTRAINT `Product_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `Category`(`category_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE;

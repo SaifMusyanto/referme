@@ -75,6 +75,7 @@ async function main() {
         "https://1.bp.blogspot.com/-e4hIYGgeAX0/XEJmaq2BA6I/AAAAAAAARqQ/CABsKIWczYocHwYGymnYqqyfPUM3mIv9wCLcBGAs/s1600/Dannis%2BCollection.png",
       current_product_total: 10,
       max_product: 50,
+      slug: "fashion-store",
     },
   });
   console.log("Merchants data created!");

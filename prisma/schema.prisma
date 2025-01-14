@@ -51,15 +51,16 @@ model Merchant {
   created_at            DateTime   @default(now())
   user                  User       @relation(fields: [user_id], references: [user_id])
   badge                 Badge?     @relation(fields: [badge_id], references: [badge_id])
+  slug                  String?    @unique @db.VarChar(100)
   categories            Category[]
 }
 
 model Category {
-  category_id    Int      @id @default(autoincrement())
+  category_id    Int       @id @default(autoincrement())
   merchant_id    Int
-  category_name  String   @db.VarChar(100)
-  category_image String?  @db.VarChar(255)
-  merchant       Merchant @relation(fields: [merchant_id], references: [merchant_id])
+  category_name  String    @db.VarChar(100)
+  category_image String?   @db.VarChar(255)
+  merchant       Merchant  @relation(fields: [merchant_id], references: [merchant_id])
   products       Product[]
 }
 
