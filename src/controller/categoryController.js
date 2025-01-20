@@ -7,7 +7,7 @@ const create = async (req, res) => {
   const schemaCategory = joi.object({
     merchant_id: joi.number().integer().positive().required().messages({
       "number.base": "Merchant ID must be a number",
-      "number.integer": "Merchant ID must be an integer",
+      "number.integer": "Merchant ID must be an finteger",
       "number.positive": "Merchant ID must be a positive number",
       "any.required": "Merchant ID is required",
     }),

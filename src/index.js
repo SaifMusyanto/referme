@@ -7,6 +7,7 @@ const { authenticateToken } = require("./middleware/authMiddleware");
 const badgesRoute = require("./routes/badges");
 const productsRoute = require("./routes/products");
 const categoriesRoute = require("./routes/categories");
+const merchantRoute = require("./routes/merchants");
 const app = express();
 const cors = require("cors");
 const PORT = process.env.PORT;
@@ -21,6 +22,7 @@ app.use("/users", usersRoutes);
 app.use("/badges", badgesRoute);
 app.use("/products", productsRoute);
 app.use("/categories", categoriesRoute);
+app.use("/merchants", merchantRoute);
 app.get("/protected", authenticateToken, (req, res) => {
   res.send("This is a protected route");
 });
