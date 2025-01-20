@@ -170,6 +170,84 @@ const update = async (req, res) => {
   }
 };
 
+const search = async (req, res) => {
+  try {
+    const { merchant_id, keyword } = req.body;
+
+    if (!merchant_id || isNaN(parseInt(merchant_id))) {
+      return res
+        .status(400)
+        .json(buildResponse(false, "Merchant ID is required and must be a number", null));
+    }
+
+    if (!keyword) {
+      return res
+        .status(400)
+        .json(buildResponse(false, "Keyword is required", null));
+    }
+
+    // Use raw SQL query to perform case-insensitive search
+    const products = await prisma.$queryRaw`
+      SELECT p.product_id, p.product_name, p.link_referral, c.category_name 
+      FROM Product p 
+      JOIN Category c ON p.category_id = c.category_id 
+      WHERE c.merchant_id = ${parseInt(merchant_id)}
+        AND LOWER(p.product_name) LIKE LOWER(${`%${keyword}%`})
+      ORDER BY p.product_id DESC
+    `;
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json(buildResponse(false, "No products found for this merchant", null));
+    }
+
+    return res
+      .status(200)
+      .json(buildResponse(true, "Successfully found products", products));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(buildResponse(false, error.message, null));
+  }
+};
+
+const getByMerchant = async (req, res) => {
+  try {
+    const merchant_id = req.params.merchant_id;
+
+    if (!merchant_id || isNaN(parseInt(merchant_id))) {
+      return res
+        .status(400)
+        .json(buildResponse(false, "Merchant ID is required and must be a number", null));
+    }
+
+    // Use raw SQL query to perform case-insensitive search
+    const products = await prisma.$queryRaw`
+      SELECT p.product_id, p.product_name, p.link_referral, c.category_name 
+      FROM Product p 
+      JOIN Category c ON p.category_id = c.category_id 
+      WHERE c.merchant_id = ${parseInt(merchant_id)}
+      ORDER BY p.product_id DESC
+    `;
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json(buildResponse(false, "No products found for this merchant", null));
+    }
+
+    return res
+      .status(200)
+      .json(buildResponse(true, "Successfully found products for this Merchant", products));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(buildResponse(false, error.message, null));
+  }
+};
+
+
 const remove = async (req, res) => {
   try {
     const product_id = parseInt(req.params.product_id);
@@ -205,7 +283,9 @@ const remove = async (req, res) => {
 module.exports = {
   create,
   update,
+  search,
   getAllByCategory,
+  getByMerchant,
   getById,
   remove,
 };
