@@ -1,20 +1,3 @@
-/*
-model Merchant {
-  merchant_id           Int        @id @default(autoincrement())
-  user_id               Int        @unique
-  merchant_name         String     @unique @db.VarChar(100)
-  badge_id              Int?
-  deskripsi_merchant    String?    @db.Text
-  profil_image          String?    @db.VarChar(255)
-  banner_image          String?    @db.VarChar(255)
-  current_product_total Int        @default(0)
-  max_product           Int        @default(50)
-  created_at            DateTime   @default(now())
-  user                  User       @relation(fields: [user_id], references: [user_id])
-  badge                 Badge?     @relation(fields: [badge_id], references: [badge_id])
-  categories            Category[]
-}
- */
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const joi = require("joi");
@@ -86,6 +69,7 @@ const create = async (req, res) => {
       max_product,
     } = req.body;
 
+    let slug = merchant_name.toLowerCase().replace(/ /g, '-');
     const savedMerchant = await prisma.merchant.create({
       data: {
         merchant_name: merchant_name,
@@ -93,7 +77,8 @@ const create = async (req, res) => {
         profil_image: profil_image,
         banner_image: banner_image,
         current_product_total: 0,
-        max_product: 100,
+        max_product: 50,
+        slug: slug,
         user: {
           connect: { user_id: parseInt(user_id) },
         },
@@ -194,16 +179,16 @@ const update = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const merchant_id = parseInt(req.params.merchant_id);
+    const slug = req.params.slug;
 
-    if (!merchant_id || isNaN(merchant_id)) {
+    if (!slug || slug === "") {
       return res
         .status(400)
         .json(buildResponse(false, "Merchant ID must be a valid number", null));
     }
 
     const merchant = await prisma.merchant.findUnique({
-      where: { merchant_id },
+      where: { slug },
       include: {
         categories: {
           include: {
@@ -228,6 +213,13 @@ const getById = async (req, res) => {
         category_name: category.category_name,
         total_products: category.products.length,
       })),
+      products: merchant.categories.map((category) =>
+        category.products.map((product) => ({
+          product_name: product.product_name,
+          link_referral: product.link_referral,
+          category_id: product.category_id,
+        }))
+      ),
     };
 
     return res
