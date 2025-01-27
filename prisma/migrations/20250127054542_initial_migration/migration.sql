@@ -33,7 +33,7 @@ CREATE TABLE `Merchant` (
     `merchant_id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `merchant_name` VARCHAR(100) NOT NULL,
-    `badge_id` INTEGER NULL,
+    `badge_id` INTEGER NULL DEFAULT 1,
     `deskripsi_merchant` TEXT NULL,
     `profil_image` VARCHAR(255) NULL,
     `banner_image` VARCHAR(255) NULL,
@@ -54,7 +54,9 @@ CREATE TABLE `Category` (
     `merchant_id` INTEGER NOT NULL,
     `category_name` VARCHAR(100) NOT NULL,
     `category_image` VARCHAR(255) NULL,
+    `slug` VARCHAR(100) NULL,
 
+    UNIQUE INDEX `Category_slug_key`(`slug`),
     PRIMARY KEY (`category_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

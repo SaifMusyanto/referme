@@ -21,9 +21,7 @@ const register = async (req, res) => {
       .withMessage("Phone number is required"),
     body("password")
       .isStrongPassword()
-      .withMessage(
-        "Your password is not Strong enough, Use characters !@#$%^&*() to get strong password"
-      )
+      .withMessage("Password must be at least 8 characters, 1 Uppercase, 1 character")
       .notEmpty()
       .withMessage("Password is required")
       .isLength({ min: 8 })
@@ -87,7 +85,13 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  // Invalidate the token by setting it to null or an empty string
+  res.json({ token: null, message: "Successfully logged out" });
+};
+
 module.exports = {
   register,
   login,
+  logout
 };

@@ -42,7 +42,7 @@ model Merchant {
   merchant_id           Int        @id @default(autoincrement())
   user_id               Int        @unique
   merchant_name         String     @unique @db.VarChar(100)
-  badge_id              Int?
+  badge_id              Int?       @default(1)
   deskripsi_merchant    String?    @db.Text
   profil_image          String?    @db.VarChar(255)
   banner_image          String?    @db.VarChar(255)
@@ -60,6 +60,7 @@ model Category {
   merchant_id    Int
   category_name  String    @db.VarChar(100)
   category_image String?   @db.VarChar(255)
+  slug           String?   @unique @db.VarChar(100)
   merchant       Merchant  @relation(fields: [merchant_id], references: [merchant_id])
   products       Product[]
 }

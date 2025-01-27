@@ -7,17 +7,17 @@ const create = async (req, res) => {
   const schemaCategory = joi.object({
     merchant_id: joi.number().integer().positive().required().messages({
       "number.base": "Merchant ID must be a number",
-      "number.integer": "Merchant ID must be an finteger",
+      "number.integer": "Merchant ID must be an integer",
       "number.positive": "Merchant ID must be a positive number",
       "any.required": "Merchant ID is required",
     }),
     category_name: joi.string().min(3).required().messages({
-      "string empty": "category name is required",
-      "string min": "category name must be at least {#limit} characters long",
+      "string.empty": "Category name is required",
+      "string.min": "Category name must be at least {#limit} characters long",
     }),
     category_image: joi.string().min(3).required().messages({
-      "string empty": "category image is required",
-      "string min": "category image must be at least {#limit} characters long",
+      "string.empty": "Category image is required",
+      "string.min": "Category image must be at least {#limit} characters long",
     }),
   });
 
@@ -39,12 +39,13 @@ const create = async (req, res) => {
     if (!merchantExist) {
       return res
         .status(400)
-        .json(buildResponse(false, "merchant id invalid", null));
+        .json(buildResponse(false, "Merchant ID is invalid", null));
     }
+
     const categoryExist = await prisma.category.findFirst({
       where: {
         merchant_id,
-        category_name: category_name.trim(), // Gunakan trim() agar input lebih bersih
+        category_name: category_name.trim(),
       },
     });
 
@@ -60,21 +61,30 @@ const create = async (req, res) => {
         );
     }
 
+    // Generate slug from category_name
+    const slug = category_name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-') // Replace spaces with dashes
+      .replace(/[^a-z0-9-]/g, ''); // Remove invalid characters
+
     const categorySaved = await prisma.category.create({
       data: {
         merchant_id: merchant_id,
         category_name: category_name,
         category_image: category_image,
+        slug: slug, // Save the generated slug
       },
     });
 
     return res
       .status(200)
-      .json(buildResponse(true, "Succesfully create category", categorySaved));
+      .json(buildResponse(true, "Successfully created category", categorySaved));
   } catch (error) {
     return res.status(400).json(buildResponse(false, error.message, null));
   }
 };
+
 
 const update = async (req, res) => {
   const schemaCategory = joi
@@ -105,7 +115,7 @@ const update = async (req, res) => {
     if (isNaN(merchant_id) || merchant_id <= 0) {
       return res
         .status(400)
-        .json(buildResponse(false, "Invalid category ID", null));
+        .json(buildResponse(false, "Invalid merchant ID", null));
     }
     if (isNaN(category_id) || category_id <= 0) {
       return res
@@ -131,7 +141,7 @@ const update = async (req, res) => {
         where: {
           merchant_id: categoryExist.merchant_id,
           category_name: req.body.category_name.trim(),
-          NOT: { category_id: category_id }, // Pastikan bukan kategori yang sedang diupdate
+          NOT: { category_id: category_id }, // Ensure it is not the category being updated
         },
       });
 
@@ -149,6 +159,17 @@ const update = async (req, res) => {
     }
 
     const { category_name, category_image } = req.body;
+    let slug;
+
+    if (category_name) {
+      // Generate new slug if category_name is updated
+      slug = category_name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .replace(/[^a-z0-9-]/g, ''); // Remove invalid characters
+    }
+
     const updateCategory = await prisma.category.update({
       where: {
         category_id: parseInt(req.params.category_id),
@@ -156,27 +177,29 @@ const update = async (req, res) => {
       data: {
         ...(category_name && { category_name }),
         ...(category_image && { category_image }),
+        ...(slug && { slug }), // Update slug if it was generated
       },
     });
 
     return res
       .status(200)
       .json(
-        buildResponse(true, "Successfully update category", updateCategory)
+        buildResponse(true, "Successfully updated category", updateCategory)
       );
   } catch (error) {
     return res.status(400).json(buildResponse(false, error.message, null));
   }
 };
 
+
 const getAll = async (req, res) => {
   try {
     const merchant_id = parseInt(req.params.merchant_id);
 
-    if (isNaN(merchant_id) || merchant_id <= 0) {
+    if (!merchant_id) {
       return res
         .status(400)
-        .json(buildResponse(false, "invalid merchant id", null));
+        .json(buildResponse(false, "invalid merchant", null));
     }
 
     const categories = await prisma.category.findMany({
@@ -203,20 +226,21 @@ const getAll = async (req, res) => {
   }
 };
 
-const getById = async (req, res) => {
-  const category_id = parseInt(req.params.category_id);
-  console.log(category_id);
-  // 🔹 Validasi apakah `category_id` valid
-  if (isNaN(category_id) || category_id <= 0) {
+const getCategory = async (req, res) => {
+  const slug = req.params.slug;
+  console.log(slug);
+  // 🔹 Validasi apakah `slug` valid
+  if (!slug) {
     return res
       .status(400)
-      .json(buildResponse(false, "Invalid category ID", null));
+      .json(buildResponse(false, "Invalid category", null));
   }
 
   try {
     // 🔹 Cari kategori berdasarkan `category_id`
     const category = await prisma.category.findUnique({
-      where: { category_id },
+      where: { slug },
+      include: {products: true},
     });
 
     // 🔹 Jika kategori tidak ditemukan
@@ -278,6 +302,6 @@ module.exports = {
   create,
   update,
   getAll,
-  getById,
+  getCategory,
   remove,
 };

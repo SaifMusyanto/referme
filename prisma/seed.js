@@ -48,9 +48,9 @@ async function main() {
   console.log("Seeding Badges...");
   await prisma.badge.createMany({
     data: [
-      { badge_name: "Gold Merchant" },
-      { badge_name: "Silver Merchant" },
       { badge_name: "Bronze Merchant" },
+      { badge_name: "Silver Merchant" },
+      { badge_name: "Gold Merchant" },
     ],
   });
 
@@ -97,6 +97,7 @@ async function main() {
       category_name: "Sweater",
       category_image:
         "https://static.vecteezy.com/system/resources/previews/025/765/551/original/cute-knitted-sweater-hand-drawn-flat-cartoon-isolated-illustration-cozy-pullover-jersey-warm-clothes-vector.jpg",
+      slug: "sweater",
     },
   });
 
